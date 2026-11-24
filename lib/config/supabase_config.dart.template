@@ -1,0 +1,16 @@
+// Supabase configuration template for Salcedo Dengue Watch.
+// Copy this file to supabase_config.dart and fill in your project values.
+class SupabaseConfig {
+  static const String supabaseUrl = 'https://YOUR-PROJECT.supabase.co';
+  static const String supabaseAnonKey = 'YOUR-ANON-KEY';
+  static const int schemaVersion = 1;
+  static const bool enableOfflineSync = true;
+  static const bool enableMapPrivacy = true;
+  static const int minimumPublicCount = 3;
+}
+
+// IMPORTANT:
+// - Do NOT store the `service_role` key in the mobile app. The `service_role` key has admin privileges.
+// - Use the `anon` key in the app and secure any privileged operations via server-side functions.
+
+// Never place a Supabase service_role key in the Flutter application.
