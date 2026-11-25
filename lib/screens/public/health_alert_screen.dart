@@ -296,7 +296,7 @@ class _HealthAlertScreenState extends State<HealthAlertScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _selectedSex,
+                        initialValue: _selectedSex,
                         decoration: InputDecoration(
                           labelText: 'Sex'.tr(),
                           border: const OutlineInputBorder(),
@@ -390,8 +390,9 @@ class _HealthAlertScreenState extends State<HealthAlertScreen> {
 
   String? _validateAge(String? value) {
     final age = int.tryParse(value?.trim() ?? '');
-    if (age == null || age < 1 || age > 120)
+    if (age == null || age < 1 || age > 120) {
       return 'Enter an age from 1 to 120'.tr();
+    }
     return null;
   }
 
@@ -513,8 +514,9 @@ class _HealthAlertScreenState extends State<HealthAlertScreen> {
   );
 
   Widget _buildBarangayField() {
-    if (_isLoadingBarangays)
+    if (_isLoadingBarangays) {
       return const Center(child: CircularProgressIndicator());
+    }
     if (_barangays.isEmpty) {
       return _notice(
         color: Colors.orange,
@@ -525,7 +527,7 @@ class _HealthAlertScreenState extends State<HealthAlertScreen> {
       );
     }
     return DropdownButtonFormField<String>(
-      value: _selectedBarangay,
+      initialValue: _selectedBarangay,
       isExpanded: true,
       decoration: InputDecoration(
         labelText: 'Barangay'.tr(),

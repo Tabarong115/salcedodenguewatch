@@ -404,13 +404,16 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   }
                   final safeRoles = _availableRoles;
                   if (snapshot.hasError || safeRoles.isEmpty) {
-                    return Text('Could not load assignable roles from Supabase.');
+                    return Text(
+                      'Could not load assignable roles from Supabase.',
+                    );
                   }
 
                   return DropdownButtonFormField<String>(
-                    value: safeRoles.any(
-                      (role) => role['id']?.toString() == _selectedRole,
-                    )
+                    initialValue:
+                        safeRoles.any(
+                          (role) => role['id']?.toString() == _selectedRole,
+                        )
                         ? _selectedRole
                         : safeRoles.first['id']?.toString(),
                     decoration: InputDecoration(labelText: 'role'.tr()),
@@ -443,7 +446,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   builder: (context, snapshot) {
                     final rhus = snapshot.data ?? [];
                     return DropdownButtonFormField<String>(
-                      value: _selectedRHUId,
+                      initialValue: _selectedRHUId,
                       decoration: InputDecoration(labelText: 'select_rhu'.tr()),
                       items: rhus
                           .map<DropdownMenuItem<String>>(
@@ -462,8 +465,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                         });
                       },
                       validator: (value) {
-                        if (_requiresRhu &&
-                            (value?.isEmpty ?? true)) {
+                        if (_requiresRhu && (value?.isEmpty ?? true)) {
                           return 'rhu_required'.tr();
                         }
                         return null;
@@ -478,7 +480,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   builder: (context, snapshot) {
                     final facilities = snapshot.data ?? [];
                     return DropdownButtonFormField<String>(
-                      value: _selectedFacilityId,
+                      initialValue: _selectedFacilityId,
                       decoration: InputDecoration(
                         labelText: 'select_facility'.tr(),
                       ),
@@ -510,7 +512,7 @@ class _EditUserDialogState extends State<_EditUserDialog> {
                   builder: (context, snapshot) {
                     final barangays = snapshot.data ?? [];
                     return DropdownButtonFormField<String>(
-                      value: _selectedBarangayId,
+                      initialValue: _selectedBarangayId,
                       decoration: InputDecoration(
                         labelText: 'select_barangay'.tr(),
                       ),
@@ -573,10 +575,12 @@ class _EditUserDialogState extends State<_EditUserDialog> {
       'name': _nameController.text.trim(),
       'role': _selectedRole,
       'rhu_id': role['requires_rhu'] == true ? _selectedRHUId : null,
-      'facility_id':
-          role['requires_facility'] == true ? _selectedFacilityId : null,
-      'barangay_id':
-          role['requires_barangay'] == true ? _selectedBarangayId : null,
+      'facility_id': role['requires_facility'] == true
+          ? _selectedFacilityId
+          : null,
+      'barangay_id': role['requires_barangay'] == true
+          ? _selectedBarangayId
+          : null,
     };
 
     final success = await widget.adminService.updateUser(
@@ -688,7 +692,9 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                     return const LinearProgressIndicator();
                   }
                   if (snapshot.hasError || !snapshot.hasData) {
-                    return Text('Could not load assignable roles from Supabase.');
+                    return Text(
+                      'Could not load assignable roles from Supabase.',
+                    );
                   }
 
                   final roles = (snapshot.data ?? [])
@@ -711,7 +717,7 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                       : roles.first['id']?.toString();
 
                   return DropdownButtonFormField<String>(
-                    value: selectedRoleValue,
+                    initialValue: selectedRoleValue,
                     decoration: InputDecoration(labelText: 'role'.tr()),
                     items: roles
                         .map<DropdownMenuItem<String>>(
@@ -821,112 +827,108 @@ class _AddUserDialogState extends State<_AddUserDialog> {
                   );
                 },
               ),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: _rolesFuture,
-                  builder: (context, snapshot) {
-                    final roles = snapshot.data ?? [];
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: _rolesFuture,
+                builder: (context, snapshot) {
+                  final roles = snapshot.data ?? [];
 
-                    final selectedRole = roles.firstWhere(
-                      (r) => r['id'] == _selectedRole,
-                      orElse: () => {},
-                    );
-                    final requiresFacility =
-                        selectedRole['requires_facility'] == true;
+                  final selectedRole = roles.firstWhere(
+                    (r) => r['id'] == _selectedRole,
+                    orElse: () => {},
+                  );
+                  final requiresFacility =
+                      selectedRole['requires_facility'] == true;
 
-                    if (!requiresFacility) return const SizedBox();
+                  if (!requiresFacility) return const SizedBox();
 
-                    return Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        FutureBuilder<List<Map<String, dynamic>>>(
-                          future: _facilitiesFuture,
-                          builder: (context, snapshot) {
-                            final facilities = snapshot.data ?? [];
-                            return DropdownButtonFormField<String>(
-                              initialValue: _selectedFacilityId,
-                              decoration: InputDecoration(
-                                labelText: 'select_facility'.tr(),
-                              ),
-                              items: facilities
-                                  .map(
-                                    (facility) => DropdownMenuItem<String>(
-                                      value: facility['id']?.toString(),
-                                      child: Text(
-                                        facility['name'] ?? 'Unknown',
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (value) {
-                                setState(() => _selectedFacilityId = value);
-                              },
-                              validator: (value) {
-                                if (requiresFacility &&
-                                    (value?.isEmpty ?? true)) {
-                                  return 'facility_required'.tr();
-                                }
-                                return null;
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: _rolesFuture,
-                  builder: (context, snapshot) {
-                    final roles = snapshot.data ?? [];
+                  return Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: _facilitiesFuture,
+                        builder: (context, snapshot) {
+                          final facilities = snapshot.data ?? [];
+                          return DropdownButtonFormField<String>(
+                            initialValue: _selectedFacilityId,
+                            decoration: InputDecoration(
+                              labelText: 'select_facility'.tr(),
+                            ),
+                            items: facilities
+                                .map(
+                                  (facility) => DropdownMenuItem<String>(
+                                    value: facility['id']?.toString(),
+                                    child: Text(facility['name'] ?? 'Unknown'),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() => _selectedFacilityId = value);
+                            },
+                            validator: (value) {
+                              if (requiresFacility &&
+                                  (value?.isEmpty ?? true)) {
+                                return 'facility_required'.tr();
+                              }
+                              return null;
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: _rolesFuture,
+                builder: (context, snapshot) {
+                  final roles = snapshot.data ?? [];
 
-                    final selectedRole = roles.firstWhere(
-                      (r) => r['id'] == _selectedRole,
-                      orElse: () => {},
-                    );
-                    final requiresBarangay =
-                        selectedRole['requires_barangay'] == true;
+                  final selectedRole = roles.firstWhere(
+                    (r) => r['id'] == _selectedRole,
+                    orElse: () => {},
+                  );
+                  final requiresBarangay =
+                      selectedRole['requires_barangay'] == true;
 
-                    if (!requiresBarangay) return const SizedBox();
+                  if (!requiresBarangay) return const SizedBox();
 
-                    return Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        FutureBuilder<List<Map<String, dynamic>>>(
-                          future: _barangaysFuture,
-                          builder: (context, snapshot) {
-                            final barangays = snapshot.data ?? [];
-                            return DropdownButtonFormField<String>(
-                              initialValue: _selectedBarangayId,
-                              decoration: InputDecoration(
-                                labelText: 'select_barangay'.tr(),
-                              ),
-                              items: barangays
-                                  .map<DropdownMenuItem<String>>(
-                                    (barangay) => DropdownMenuItem<String>(
-                                      value: barangay['id']?.toString(),
-                                      child: Text(
-                                        barangay['name'] ?? 'Unknown',
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (value) {
-                                setState(() => _selectedBarangayId = value);
-                              },
-                              validator: (value) {
-                                if (requiresBarangay &&
-                                    (value?.isEmpty ?? true)) {
-                                  return 'barangay_required'.tr();
-                                }
-                                return null;
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                  return Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                        future: _barangaysFuture,
+                        builder: (context, snapshot) {
+                          final barangays = snapshot.data ?? [];
+                          return DropdownButtonFormField<String>(
+                            initialValue: _selectedBarangayId,
+                            decoration: InputDecoration(
+                              labelText: 'select_barangay'.tr(),
+                            ),
+                            items: barangays
+                                .map<DropdownMenuItem<String>>(
+                                  (barangay) => DropdownMenuItem<String>(
+                                    value: barangay['id']?.toString(),
+                                    child: Text(barangay['name'] ?? 'Unknown'),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() => _selectedBarangayId = value);
+                            },
+                            validator: (value) {
+                              if (requiresBarangay &&
+                                  (value?.isEmpty ?? true)) {
+                                return 'barangay_required'.tr();
+                              }
+                              return null;
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -957,7 +959,8 @@ class _AddUserDialogState extends State<_AddUserDialog> {
 
     final roles = await _rolesFuture;
     final selectedRole = roles.firstWhere(
-      (role) => role['id']?.toString() == _selectedRole &&
+      (role) =>
+          role['id']?.toString() == _selectedRole &&
           role['is_assignable'] == true,
       orElse: () => <String, dynamic>{},
     );
@@ -2220,7 +2223,7 @@ class _EditFacilityDialogState extends State<_EditFacilityDialog> {
                 builder: (context, snapshot) {
                   final rhus = snapshot.data ?? [];
                   return DropdownButtonFormField<String>(
-                    value: _selectedRHUId,
+                    initialValue: _selectedRHUId,
                     decoration: InputDecoration(labelText: 'select_rhu'.tr()),
                     items: rhus
                         .map(
@@ -2247,7 +2250,7 @@ class _EditFacilityDialogState extends State<_EditFacilityDialog> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _facilityType,
+                initialValue: _facilityType,
                 decoration: InputDecoration(labelText: 'facility_type'.tr()),
                 items: [
                   DropdownMenuItem(
@@ -2938,7 +2941,7 @@ class _EditBarangayDialogState extends State<_EditBarangayDialog> {
                 builder: (context, snapshot) {
                   final rhus = snapshot.data ?? [];
                   return DropdownButtonFormField<String>(
-                    value: _selectedRHUId,
+                    initialValue: _selectedRHUId,
                     decoration: InputDecoration(labelText: 'select_rhu'.tr()),
                     items: rhus
                         .map(
